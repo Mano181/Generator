@@ -34,7 +34,14 @@ Scales up with proper initialization and normalization:
 Derives and implements backpropagation manually through the entire computation graph — cross-entropy, batch norm, tanh, matrix multiplications, and embeddings — without using `loss.backward()`.
 
 ### 5. WaveNet Implementation (`wavenetImpl.ipynb`)
-WaveNet-style hierarchical architecture using dilated causal convolutions for longer context.
+WaveNet-style hierarchical architecture that processes characters in a tree-like fashion:
+- **Larger context window** (block_size=8, up from 3)
+- **`FlattenConsecutive`** layer that groups pairs of embeddings, enabling hierarchical merging
+- **`Sequential`** container and **`Embedding`** class for a cleaner, more modular design
+- 3-level hierarchy: pairs of characters are merged progressively (8→4→2→1)
+- 76K parameters, 24-dim embeddings, 128 hidden neurons
+- Achieves **~1.77 train loss / ~1.99 validation loss** — best results in the series
+- Demonstrates that convolutions are essentially efficient "for loops" over spatial positions
 
 ## How It Works
 
@@ -72,14 +79,18 @@ jupyter notebook
 
 ## Sample Output
 
-After training, the MLP generates names like:
+The WaveNet model (notebook 5) generates realistic names like:
 ```
-ruegra
-ruyprr
-ujuru
+chetta
+hendrix
+jamylie
+marianah
+jayce
+jaylene
+aubreana
 ```
 
-Quality improves with deeper networks and better training techniques across the notebook progression.
+Earlier models produce less realistic output — quality improves progressively across notebooks.
 
 ## Acknowledgements
 
